@@ -1,2 +1,1 @@
-# ADT
-Algebraic Data Types
+# Algebraic Data Types
