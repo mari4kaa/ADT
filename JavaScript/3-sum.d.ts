@@ -1,14 +1,19 @@
 export declare class Sum {
   static create<
-    T extends string,
-    U extends { Some: new (...args: unknown[]) => object; None: new () => object }
+    Tag extends string,
+    Variants extends Record<string, VariantClass>
   >(
-    shape: Record<T, U>
-  ): {
-    new (...args: unknown[]): object;
-    create(...args: unknown[]): object;
-    None: object;
-    readonly tag: T;
-    readonly variants: string[];
-  };
+    shape: Record<Tag, Variants>
+  ): SumStruct<Variants>;
 }
+
+export interface VariantClass {
+  new (value: unknown): any;
+  is(value: unknown): boolean;
+}
+
+export type SumStruct<Variants extends Record<string, VariantClass>> = {
+  create(value?: unknown): InstanceType<Variants[keyof Variants]>;
+  readonly tag: string;
+  readonly variants: (keyof Variants)[];
+};

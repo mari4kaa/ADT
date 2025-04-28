@@ -10,25 +10,22 @@ class Sum {
     const variantsObj = shape[tag];
     const variantNames = Object.keys(variantsObj);
 
-    if (!('None' in variantsObj)) {
-      throw new Error('Sum.create expects a None variant');
-    }
-    const VariantNone = variantsObj.None;
-    const noneInstance = new VariantNone();
-
     class Struct {
       constructor(...args) {
-        if (args.length === 0) return noneInstance;
-        const VariantSome = variantsObj.Some;
-        return new VariantSome(...args);
+        return Struct.create(...args);
       }
 
-      static create(...args) {
-        return new Struct(...args);
+      static create(value) {
+        for (let i = 0; i < variantNames.length; i++) {
+          const variant = variantNames[i];
+          const VariantClass = variantsObj[variant];
+          if (VariantClass.is(value)) {
+            return new VariantClass(value);
+          }
+        }
+        throw new Error('No matching variant for value');
       }
     }
-
-    Struct.None = noneInstance;
     Struct.tag = tag;
     Struct.variants = variantNames;
 
@@ -38,9 +35,33 @@ class Sum {
 
 // Usage
 
+class Integer {
+  constructor(value) {
+    this.value = value;
+  }
+
+  static is(value) {
+    return typeof value === 'number' && Number.isInteger(value);
+  }
+}
+
+class Bool {
+  constructor(value) {
+    this.value = value;
+  }
+
+  static is(value) {
+    return typeof value === 'boolean';
+  }
+}
+
 class Some {
   constructor(value) {
     this.value = value;
+  }
+
+  static is(value) {
+    return typeof value !== 'undefined';
   }
 }
 
@@ -51,15 +72,15 @@ class None {
     if (None.#instance) return None.#instance;
     None.#instance = this;
   }
+
+  static is(value) {
+    return typeof value === 'undefined';
+  }
 }
 
-const Option = Sum.create({ Option: { Some, None } });
+const Option = Sum.create({ Option: { Integer, Bool, None } });
 
-const some = Option.create(42);
-const none = Option.create();
-
-console.log(some);
-// { value: 42, tag: 'Option', type: 'Some' }
-
-console.log(none);
-// None {}
+const a = Option.create(42);
+const b = Option.create(false);
+const c = Option.create();
+console.log({ a, b, c });
