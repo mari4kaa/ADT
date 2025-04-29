@@ -8,7 +8,7 @@ export declare class Sum {
 }
 
 export interface VariantClass {
-  new (value: unknown): any;
+  new (value: unknown): unknown;
   is(value: unknown): boolean;
 }
 

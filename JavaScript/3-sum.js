@@ -7,29 +7,28 @@ class Sum {
       throw new Error('Sum.create expects a single root tag');
     }
     const tag = keys[0];
-    const variantsObj = shape[tag];
-    const variantNames = Object.keys(variantsObj);
+    const variants = shape[tag];
+    const names = Object.keys(variants);
 
-    class Struct {
+    return class Struct {
+      static tag = tag;
+      static variants = names;
+
       constructor(...args) {
         return Struct.create(...args);
       }
 
       static create(value) {
-        for (let i = 0; i < variantNames.length; i++) {
-          const variant = variantNames[i];
-          const VariantClass = variantsObj[variant];
+        for (let i = 0; i < names.length; i++) {
+          const variant = names[i];
+          const VariantClass = variants[variant];
           if (VariantClass.is(value)) {
             return new VariantClass(value);
           }
         }
         throw new Error('No matching variant for value');
       }
-    }
-    Struct.tag = tag;
-    Struct.variants = variantNames;
-
-    return Struct;
+    };
   }
 }
 
@@ -78,9 +77,10 @@ class None {
   }
 }
 
-const Option = Sum.create({ Option: { Integer, Bool, None } });
+const Option = Sum.create({ Option: { Integer, Bool, Some, None } });
 
 const a = Option.create(42);
 const b = Option.create(false);
-const c = Option.create();
-console.log({ a, b, c });
+const c = Option.create('Hello');
+const d = Option.create();
+console.log({ a, b, c, d });
