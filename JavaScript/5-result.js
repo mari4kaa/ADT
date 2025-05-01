@@ -7,10 +7,11 @@ class Result {
   }
 
   static create(input) {
-    if (input instanceof globalThis.Error) {
-      return new Result({ value: undefined, error: input });
-    }
-    return new Result({ value: input, error: undefined });
+    return new Result(
+      input instanceof globalThis.Error
+        ? { value: undefined, error: input }
+        : { value: input, error: undefined },
+    );
   }
 
   static fromValue(value) {
