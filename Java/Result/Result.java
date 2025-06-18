@@ -17,7 +17,7 @@ public class Result<T, E extends Exception> {
         return new Result<>(value, null);
     }
 
-    public static <E extends Exception> Result<Void, E> fromError(E error) {
+    public static <T, E extends Exception> Result<T, E> fromError(E error) {
         return new Result<>(null, error);
     }
 
@@ -36,4 +36,4 @@ public class Result<T, E extends Exception> {
     public E getError() {
         return error;
     }
-} 
+}
